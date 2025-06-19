@@ -20,3 +20,15 @@ def get_users():
     if current_user.role != 'admin': return '', 403
     users = User.query.all()
     return jsonify([{ 'id': u.id, 'email': u.email, 'role': u.role } for u in users])
+
+@bp.route('/users/<int:user_id>', methods=['DELETE'])
+@login_required
+def delete_user(user_id):
+    if current_user.role != 'admin':
+        return '', 403
+    user = User.query.get(user_id)
+    if not user:
+        return '', 404
+    db.session.delete(user)
+    db.session.commit()
+    return '', 204
